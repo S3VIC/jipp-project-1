@@ -9,6 +9,32 @@ struct stack* stack_init() {
 	return container;
 }
 
+int stack_add(struct stack* stack, struct student* data) {
+	if (!stack) {
+		printf("Invalid stack provided, aborting");
+		return 1;
+	}
+	struct element* newElem = (struct element*)malloc(sizeof(struct element));
+	if (!newElem) {
+		printf("Something went wrong during memory allocation");
+		return 1;
+	}
+	newElem->data = data;
+	newElem->prev = NULL;
+	if (!stack->curr && stack->count == 0) {
+		stack->curr = newElem;
+		stack->count++;
+		printf("Element added");
+		return 0;
+	}
+	struct element* tmp = stack->curr;
+	newElem->prev = tmp;
+	stack->curr = newElem;
+	stack->count++;
+	printf("Element added");
+	return 0;
+}
+
 int stack_free(struct stack* stack) {
 	if (!stack->curr) {
 		printf("Empty stack! Aborting memory release");

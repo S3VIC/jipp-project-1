@@ -34,7 +34,7 @@ int stack_free(struct stack *stack);
 /// Adds item to stack
 /// </summary>
 /// <returns>Returns 0 if success and non-zero value otherwise</returns>
-int stack_add(struct student *item);
+int stack_add(struct stack* stack, struct student *item);
 
 /// <summary>
 /// Removes an item from stack
