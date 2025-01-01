@@ -1,7 +1,8 @@
 #include "stack.h"
+#include <stdio.h>
 
-struct stack* stack_init() {
-	struct stack *container = (struct stack*)malloc(sizeof(struct stack));
+stack* stack_init() {
+	stack *container = (stack*)malloc(sizeof(stack));
 	if (!container)
 		return NULL;
 	container->count = 0;
@@ -9,12 +10,12 @@ struct stack* stack_init() {
 	return container;
 }
 
-int stack_add(struct stack* stack, struct student* data) {
+int stack_add(stack* stack, student* data) {
 	if (!stack) {
 		printf("Invalid stack provided, aborting");
 		return 1;
 	}
-	struct element* newElem = (struct element*)malloc(sizeof(struct element));
+	element* newElem = (struct element*)malloc(sizeof(element));
 	if (!newElem) {
 		printf("Something went wrong during memory allocation");
 		return 1;
@@ -27,7 +28,7 @@ int stack_add(struct stack* stack, struct student* data) {
 		printf("Element added");
 		return 0;
 	}
-	struct element* tmp = stack->curr;
+	element* tmp = stack->curr;
 	newElem->prev = tmp;
 	stack->curr = newElem;
 	stack->count++;
@@ -35,18 +36,50 @@ int stack_add(struct stack* stack, struct student* data) {
 	return 0;
 }
 
-int stack_free(struct stack* stack) {
+int stack_free(stack* stack) {
 	if (!stack->curr) {
 		printf("Empty stack! Aborting memory release");
 		return 0;
 	}
-	struct element* tmp = NULL;
+	element* tmp = NULL;
 	while ( stack->curr->prev ) {
 		tmp = stack->curr->prev;
-		free(stack->curr);
+		stack_free_elem(&(stack->curr));
 		stack->curr = tmp;
+		stack->count--;
 	}
-	free(stack->curr);
-	stack->curr = NULL;
+	stack_free_elem(&(stack->curr));
+	stack->count = 0;
 	return 0;
+}
+
+int stack_free_elem(element** elem) {
+	if (!elem || !(*elem)) {
+		return 1;
+	}
+	free((*elem)->data->name);
+	free((*elem)->data);
+	free(*elem);
+	(*elem)->data = NULL;
+	*elem = NULL;
+}
+
+int stack_pop(stack *stack) {
+	if (!(stack->curr) && stack->count == 0) {
+		printf("[ERROR] No elements in stack!");
+		return 1;
+	}
+	element *tmp = stack->curr->prev;
+	stack_free_elem(&stack->curr);
+	stack->count--;
+	if (stack->count == 0)
+		return 0;
+	stack->curr = tmp;
+	return 0;
+}
+
+student* stack_get_first(stack* stack) {
+	if (stack->count != 0 && !stack->curr)
+		return stack->curr;
+	return NULL;
 }
